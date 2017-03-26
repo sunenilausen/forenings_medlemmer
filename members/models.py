@@ -117,6 +117,7 @@ class Person(models.Model):
     notes = models.TextField('Noter', blank=True, null=False, default ="")
     added = models.DateTimeField('Tilføjet', default=timezone.now, blank=False)
     deleted_dtm = models.DateTimeField('Slettet', null=True, blank=True)
+
     def __str__(self):
         return self.name
 
@@ -811,3 +812,58 @@ class ZipcodeRegion(models.Model):
     city = models.CharField('By', max_length=200)
     municipalcode = models.IntegerField('Kommunekode', blank=False, null=False)
     municipalname = models.TextField('Kommunenavn', null=False, blank=False)
+
+class ReimburseRequest(models.Model):
+    submitter = models.ForeignKey(Person, related_name='reimburse_request_submitter', blank=False, null=False)
+    receiver = models.ForeignKey(Person, related_name='reimburse_request_receiver', blank=False, null=False)
+
+    title = models.CharField('Titel', max_length=60, blank=False, null=False)
+
+    validated_person_1 =  models.ForeignKey(Person, related_name='reimburse_request_validated_person_1', blank=False, null=False)
+    validated_person_2 =  models.ForeignKey(Person, related_name='reimburse_request_validated_person_2', blank=False, null=False)
+    validated_person_1_dtm =  models.DateField('Første godkendelse', null=True, blank=True)
+    validated_person_2_dtm =  models.DateField('Anden godkendelse', null=True, blank=True)
+
+    department = models.ForeignKey(Department, blank=True, null=True)
+    union = models.ForeignKey(Union, blank=False, null=False)
+
+    created_dtm = models.DateField('Oprettet', default=timezone.now, null=True, blank=True)
+
+    comment = models.TextField('Kommentar', null=True, blank=True, default="");
+
+    bank_message_reciever = models.CharField('Bank besked til modtager', max_length=60, blank=False, null=False)
+    bank_message_sender = models.CharField('Bank besked til afsender', max_length=60, blank=False, null=False)
+
+    bank_registration = models.CharField('Bank registreringsnummer', max_length=4, blank=True, null=False, default="");
+    bank_account = models.CharField('Bank kontonummer', max_length=20, blank=True, null=False, default="");
+
+    refunded_failed_dtm = models.DateField('Fejlet', null=True, blank=True)
+    refunded_failed_status = models.TextField('Fejlbesked', null=True, blank=True)
+
+    rejected_dtm = models.DateField('Fejlet', null=True, blank=True)
+    rejected_status = models.TextField('Fejlbesked', null=True, blank=True)
+
+    sent_dtm = models.DateField('Sendt til bank', null=True, blank=True)
+
+    refunded_dtm = models.DateField('Refunderet', null=True, blank=True)
+
+class ReimbursementEntryTypes(models.Model):
+    code = models.CharField('Kode', max_length=20, blank=False, null=False);
+    title = models.CharField('Type', max_length=20, blank=False, null=False);
+    description = models.TextField('Beskrivelse', null=False, blank=False);
+
+class ReimbursementEntry(models.Model):
+    request = models.ForeignKey(ReimburseRequest, blank=False, null=False)
+    type = models.ForeignKey(ReimbursementEntryTypes, blank=False, null=False)
+    value = models.DecimalField('Beløb', max_digits=10, decimal_places=2, blank=False, null=False)
+
+class ReimbursementReciept(models.Model):
+    request = models.ForeignKey(ReimburseRequest, blank=False, null=False)
+    file = models.FileField(upload_to="Receipts")
+    value = models.DecimalField('Beløb', max_digits=10, decimal_places=2, blank=False, null=False)
+    merchant = models.CharField('Købsted', max_length=60, blank=False, null=False);
+
+class ReimbursementRequestXena(models.Model):
+    request = models.ForeignKey(ReimburseRequest, blank=False, null=False)
+
+    sent_dtm = models.DateField('Sendt til XENA', null=True, blank=True)
