@@ -13,15 +13,22 @@ import datetime
 import hashlib, hmac
 import json
 from ratelimit.decorators import ratelimit
+import re
 
 def ratelimit_helper_family(group, request):
     """
     Defines ratelimits for family views
-    :param group:
-    :param request:
-    :return:
     """
-    return '50/s'
+    # ToDo: find a better way to get unique
+    unique = re.search(
+        '/family/(?P<unique>[\w-]+)/',
+        request.META['PATH_INFO']
+    ).group('unique')
+    try:
+        Family.objects.get(unique=unique)
+        return None # No limit
+    except Family.DoesNotExist:
+        return '10/s'
 
 @ratelimit(group='family',
            key='header:x-real-ip',
