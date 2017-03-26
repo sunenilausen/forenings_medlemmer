@@ -851,6 +851,9 @@ class ReimburseRequest(models.Model):
     refunded_dtm = models.DateField('Refunderet', null=True, blank=True)
 
 class ReimbursementEntryTypes(models.Model):
+    class Meta:
+        verbose_name = 'Refusionsposttype'
+        verbose_name_plural = 'Refusionsposttyper'
     code = models.CharField('Kode', max_length=20, blank=False, null=False);
     title = models.CharField('Type', max_length=20, blank=False, null=False);
     description = models.TextField('Beskrivelse', null=False, blank=False);
