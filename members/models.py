@@ -815,8 +815,8 @@ class ZipcodeRegion(models.Model):
 
 class ReimburseRequest(models.Model):
     class Meta:
-        verbose_name = 'Udlægsforespørgsel'
-        verbose_name_plural = 'Udlægsforespørgsler'
+        verbose_name = 'Refusion'
+        verbose_name_plural = 'Refusioner'
     submitter = models.ForeignKey(Person, related_name='reimburse_request_submitter', blank=False, null=False)
     receiver = models.ForeignKey(Person, related_name='reimburse_request_receiver', blank=False, null=False)
 
@@ -854,6 +854,8 @@ class ReimbursementEntryTypes(models.Model):
     code = models.CharField('Kode', max_length=20, blank=False, null=False);
     title = models.CharField('Type', max_length=20, blank=False, null=False);
     description = models.TextField('Beskrivelse', null=False, blank=False);
+    def __str__(self):
+        return self.title
 
 class ReimbursementEntry(models.Model):
     request = models.ForeignKey(ReimburseRequest, blank=False, null=False)

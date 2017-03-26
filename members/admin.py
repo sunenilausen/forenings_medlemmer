@@ -876,10 +876,22 @@ class EquipmentAdmin(admin.ModelAdmin):
     inlines = (EquipmentLoanInline ,)
     list_per_page = 20
 
-
 admin.site.register(Equipment, EquipmentAdmin)
+
+class ReimbursementRecieptInline(admin.TabularInline):
+    model = ReimbursementReciept
+
+class ReimbursementEntryInline(admin.TabularInline):
+    model = ReimbursementEntry
 
 class ReimburseRequestAdmin(admin.ModelAdmin):
     list_display = ['submitter', 'receiver', 'union', 'department', 'bank_message_sender']
+    raw_id_fields = ("submitter", "receiver", "validated_person_1", "validated_person_2")
+    inlines = (ReimbursementRecieptInline, ReimbursementEntryInline,)
 
 admin.site.register(ReimburseRequest, ReimburseRequestAdmin)
+
+class ReimbursementEntryTypesAdmin(admin.ModelAdmin):
+    list_display = ['code', 'title', 'description']
+
+admin.site.register(ReimbursementEntryTypes, ReimbursementEntryTypesAdmin)
