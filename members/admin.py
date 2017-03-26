@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.db import models
 from django.db import transaction
 from django.db.models import Q
-from members.models import Person, Department, Union, Volunteer, Member, Activity, ActivityInvite, ActivityParticipant,Family, EmailItem, WaitingList, EmailTemplate, AdminUserInformation, QuickpayTransaction, Payment, Equipment, EquipmentLoan
+from members.models import Person, Department, Union, Volunteer, Member, Activity, ActivityInvite, ActivityParticipant,Family, EmailItem, WaitingList, EmailTemplate, AdminUserInformation, QuickpayTransaction, Payment, Equipment, EquipmentLoan, ReimburseRequest, ReimbursementEntry, ReimbursementEntryTypes, ReimbursementRequestXena, ReimbursementReciept
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from django.db.models.functions import Lower
@@ -878,3 +878,8 @@ class EquipmentAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Equipment, EquipmentAdmin)
+
+class ReimburseRequestAdmin(admin.ModelAdmin):
+    list_display = ['submitter', 'receiver', 'union', 'department', 'bank_message_sender']
+
+admin.site.register(ReimburseRequest, ReimburseRequestAdmin)

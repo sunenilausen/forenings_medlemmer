@@ -814,6 +814,9 @@ class ZipcodeRegion(models.Model):
     municipalname = models.TextField('Kommunenavn', null=False, blank=False)
 
 class ReimburseRequest(models.Model):
+    class Meta:
+        verbose_name = 'Udlægsforespørgsel'
+        verbose_name_plural = 'Udlægsforespørgsler'
     submitter = models.ForeignKey(Person, related_name='reimburse_request_submitter', blank=False, null=False)
     receiver = models.ForeignKey(Person, related_name='reimburse_request_receiver', blank=False, null=False)
 
