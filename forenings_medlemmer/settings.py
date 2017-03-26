@@ -149,3 +149,18 @@ DJANGO_CRON_DELETE_LOGS_OLDER_THAN=7
 
 QUICKPAY_API_KEY='xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 QUICKPAY_PRIVATE_KEY='xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache'
+    },
+    'ratelimit': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'ratelimit',
+    }
+}
+
+RATELIMIT_ENABLE = True
+RATELIMIT_CACHE_PREFIX = ''
+RATELIMIT_USE_CACHE = 'ratelimit'
+RATELIMIT_VIEW = None
