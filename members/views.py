@@ -102,6 +102,10 @@ def ConfirmFamily(request, unique):
         }
         return render(request, 'members/family_confirm_details.html',context)
 
+@ratelimit(group='family',
+           key='header:x-real-ip',
+           rate=ratelimit_helper_family,
+           block=True)
 def WaitingListSetSubscription(request, unique, id, departmentId, action):
     person = get_object_or_404(Person, pk=id)
     if person.family.unique != unique:
