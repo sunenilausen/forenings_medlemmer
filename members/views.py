@@ -12,28 +12,9 @@ from django.views.decorators.csrf import csrf_exempt
 import datetime
 import hashlib, hmac
 import json
-from ratelimit.decorators import ratelimit
-import re
+from members.ratelimiter import ratelimit_family
 
-def ratelimit_helper_family(group, request):
-    """
-    Defines ratelimits for family views
-    """
-    # ToDo: find a better way to get unique
-    unique = re.search(
-        '/family/(?P<unique>[\w-]+)/',
-        request.META['PATH_INFO']
-    ).group('unique')
-    try:
-        Family.objects.get(unique=unique)
-        return None # No limit
-    except Family.DoesNotExist:
-        return '10/s'
-
-@ratelimit(group='family',
-           key='header:x-real-ip',
-           rate=ratelimit_helper_family,
-           block=True)
+@ratelimit_family
 def FamilyDetails(request,unique):
     family = get_object_or_404(Family, unique=unique)
     invites= ActivityInvite.objects.filter(person__family = family, expire_dtm__gte=timezone.now(), rejected_dtm=None)
@@ -80,10 +61,7 @@ def FamilyDetails(request,unique):
     }
     return render(request, 'members/family_details.html', context)
 
-@ratelimit(group='family',
-           key='header:x-real-ip',
-           rate=ratelimit_helper_family,
-           block=True)
+@ratelimit_family
 def ConfirmFamily(request, unique):
     family = get_object_or_404(Family, unique=unique)
     persons = Person.objects.filter(family=family)
@@ -102,10 +80,7 @@ def ConfirmFamily(request, unique):
         }
         return render(request, 'members/family_confirm_details.html',context)
 
-@ratelimit(group='family',
-           key='header:x-real-ip',
-           rate=ratelimit_helper_family,
-           block=True)
+@ratelimit_family
 def WaitingListSetSubscription(request, unique, id, departmentId, action):
     person = get_object_or_404(Person, pk=id)
     if person.family.unique != unique:
@@ -131,10 +106,7 @@ def WaitingListSetSubscription(request, unique, id, departmentId, action):
 
     return HttpResponseRedirect(reverse('family_detail', args=[unique]))
 
-@ratelimit(group='family',
-           key='header:x-real-ip',
-           rate=ratelimit_helper_family,
-           block=True)
+@ratelimit_family
 def DeclineInvitation(request, unique, invitation_id):
     activity_invite = get_object_or_404(ActivityInvite, pk=invitation_id, person__family__unique=unique)
 
@@ -153,10 +125,7 @@ def DeclineInvitation(request, unique, invitation_id):
               }
     return render(request, 'members/decline_activivty_invite.html', context)
 
-@ratelimit(group='family',
-           key='header:x-real-ip',
-           rate=ratelimit_helper_family,
-           block=True)
+@ratelimit_family
 def ActivitySignup(request, activity_id, unique=None, person_id=None):
     if(unique is None or person_id is None):
         # View only mode
@@ -345,10 +314,7 @@ def UpdatePersonFromForm(person, form):
 
             relative.save()
 
-@ratelimit(group='family',
-           key='header:x-real-ip',
-           rate=ratelimit_helper_family,
-           block=True)
+@ratelimit_family
 def PersonCreate(request, unique, membertype):
     family = get_object_or_404(Family, unique=unique)
     if request.method == 'POST':
@@ -376,10 +342,7 @@ def PersonCreate(request, unique, membertype):
         form = PersonForm(instance=person)
     return render(request, 'members/person_create_or_update.html', {'form': form, 'person' : person, 'family': family, 'membertype': membertype})
 
-@ratelimit(group='family',
-           key='header:x-real-ip',
-           rate=ratelimit_helper_family,
-           block=True)
+@ratelimit_family
 def PersonUpdate(request, unique, id):
     person = get_object_or_404(Person, pk=id)
     if person.family.unique != unique:
@@ -602,10 +565,7 @@ def QuickpayCallback(request):
         # Request is Not authenticated
         return HttpResponseForbidden('Invalid request')
 
-@ratelimit(group='family',
-           key='header:x-real-ip',
-           rate=ratelimit_helper_family,
-           block=True)
+@ratelimit_family
 def waitinglistView(request, unique=None):
 
     department_children_waiting = {'departments': {}}
@@ -639,10 +599,7 @@ def waitinglistView(request, unique=None):
 
     return render(request, 'members/waitinglist.html', {'department_children_waiting': department_children_waiting, 'unique': unique})
 
-@ratelimit(group='family',
-           key='header:x-real-ip',
-           rate=ratelimit_helper_family,
-           block=True)
+@ratelimit_family
 def paymentGatewayErrorView(request, unique=None):
     return render(request, 'members/payment_gateway_error.html', {'unique': unique})
 

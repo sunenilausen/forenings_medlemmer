@@ -164,3 +164,14 @@ RATELIMIT_ENABLE = True
 RATELIMIT_CACHE_PREFIX = ''
 RATELIMIT_USE_CACHE = 'ratelimit'
 RATELIMIT_VIEW = None
+
+RATELIMIT_KEY = 'header:x-real-ip'
+if DEBUG:
+    RATELIMIT_KEY = 'ip'
+
+RATELIMIT_LIMITS = {
+    'family': {
+        'BAD': '10/s',
+        'GOOD': None
+    }
+}
